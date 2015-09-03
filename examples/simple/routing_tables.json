@@ -1,0 +1,22 @@
+[
+    {
+        "chip": [0, 0],
+        "entries": [
+            {"key": 2, "mask": 4294967295, "directions": ["core2", "north-east"]}
+        ]
+    },
+    {
+        "chip": [1, 1],
+        "entries": [
+            {"key": 2, "mask": 4294967295, "directions": ["north-east"]}
+        ]
+    },
+    {
+        "chip": [2, 2],
+        "entries": [
+            {"key": 2, "mask": 4294967295, "directions": ["core1"]},
+            {"key": 1, "mask": 4294967295, "directions": ["core1"]}
+        ]
+    }
+]
+

@@ -1,0 +1,5 @@
+{
+    "vertex0": {"cores": 1},
+    "vertex1": {"cores": 1, "sdram": 1024},
+    "vertex2": {"cores": 1, "sdram": 1024}
+}

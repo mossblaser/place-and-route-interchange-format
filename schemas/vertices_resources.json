@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    
+    "title": "A description of the resources consumed by all vertices in an application.",
+    "type": "object",
+    "additionalProperties": {"$ref": "#/resources/resourceSet"},
+    
+    "resources": {
+        "resourceSet": {
+            "description": "Enumerates a set of on-chip resources available/required.",
+            "type": "object",
+            "additionalProperties": {
+                "description": "The quantity of a resource available.",
+                "type": "integer",
+                "minimum": 0
+            }
+        }
+    }
+}

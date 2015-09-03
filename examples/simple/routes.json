@@ -1,0 +1,31 @@
+[
+    {
+        "chip": [2, 2],
+        "children": [
+            {"route": "core1", "next_hop": "vertex0"}
+        ]
+    },
+    {
+        "chip": [0, 0],
+        "children": [
+            {
+                "route": "north-east",
+                "next_hop": {
+                    "chip": [1, 1],
+                    "children": [
+                        {
+                            "route": "north-east",
+                            "next_hop": {
+                                "chip": [2, 2],
+                                "children": [
+                                    {"route": "core1", "next_hop": "vertex0"}
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {"route": "core2", "next_hop": "vertex2"}
+        ]
+    }
+]

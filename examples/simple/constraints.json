@@ -1,0 +1,13 @@
+[
+    {
+        "type": "reserve_resource",
+        "resource": "cores",
+        "reservation": [0, 1],
+        "location": null
+    },
+    {
+        "type": "location",
+        "vertex": "vertex0",
+        "location": [2, 2]
+    }
+]

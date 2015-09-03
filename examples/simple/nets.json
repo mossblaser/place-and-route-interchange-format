@@ -1,0 +1,4 @@
+[
+    {"source": "vertex0", "sinks": ["vertex0"], "weight": 1.0},
+    {"source": "vertex1", "sinks": ["vertex0", "vertex2"], "weight": 1.0}
+]
