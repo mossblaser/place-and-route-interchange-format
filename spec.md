@@ -31,12 +31,14 @@ Vertex
     and a some SDRAM.
     
     *Vertices* are uniquely identified by a (short) unique string.
+
 Net
 :   A (directed) connection from one *vertex* to a number of other *vertices*
     in the *application graph*. During routing, nets are converted into
     specific routes through a SpiNNaker machine which can be used to generate
     routing tables. A net may also have a (positive) weight associated with it
     which may be used as a hint by placement and routing algorithms.
+
 Resource
 :   A *resource* is any finite resource available to a SpiNNaker chip (e.g.
     cores, SDRAM) which may be consumed by a vertex. *Resources* are allocated
@@ -52,10 +54,12 @@ Resource
       Measured in bytes.
     
     Quantities of a *resource* are represented by positive integer values.
+
 Constraint
 :   *Constraints* specify additional requirements on how an application graph is
     placed and routed. For example a constraint might be used to force a
     particular *vertex* to always be placed on a specific chip.
+
 Machine
 :   A description of a SpiNNaker machine whose topology is assumed to be a
     rectangular hexagonal toroid, possibly with some dead links/chips and some
