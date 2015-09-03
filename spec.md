@@ -62,19 +62,66 @@ Machine
     cores with differing levels of resources available.
 
 
-File Format
------------
+Tool-flow
+---------
 
-A place/route problem and solution is broken down into various files.
+A place/route problem and solution is broken down into various individual
+algorithms. Initially, the following files are provided which describe the
+problem:
 
-TODO: Describe flow.
+* `vertices_resources.json`: Enumerates each vertex in the graph and the
+  resources it consumes.
+* `nets.json`: Enumerates the nets which connect those vertices together.
+* `machine.json`: Describes a SpiNNaker machine (dimensions, available
+  resources) into which the application must be mapped.
+* `constraints.json`: Describes a set of constraints on how the application
+  should be placed/routed etc.
+
+These files are supplied to a placement algorithm which produces a new file:
+
+* `placements.json`: For each vertex, gives the chip onto which it was placed.
+
+After this, these files are supplied an allocation algorithm which produces a
+further file:
+
+* `allocations.json`: For each vertex, gives the chip resources allocated to
+  it.
+
+Next, these files are supplied to a routing algorithm which produces another
+new file:
+
+* `routes.json`: This file describes the route to be taken by each net.
+
+A key-generation algorithm can be used to generate routing keys for each net in
+the application, producing a new file:
+
+* `keys.json`: For each net, gives the routing key and mask which will identify
+  it.
+
+A routing table generation algorithm combines the above files into routing
+tables for chips in the machine:
+
+* `routing_tables.json`: For each chip on which routing entries are required,
+  the routing table entries are enumerated.
+
+Tool authors are free to merge, break-apart and reorder any or all of these
+steps. For example, authors may wish to combine key generation and table
+generation. By respecting the format of these files, tools may (hopefully...)
+be freely combined.
+
+
+File Formats
+------------
 
 All files are encoded using [JSON](http://www.json.org/), a simple
 human-readable, light-weight data-interchange format. High-performance JSON
 libraries are available for all popular programming languages (and plenty of
-unpopular ones too...). For each file, a [schema is provided](./schemas)
-(written in [JSON Schema](http://json-schema.org/)) which defines the structure
-of the data. You can automatically verify the structural correctness of a data
+unpopular ones too...). A complete example set of example files is provided in
+the [`examples/simple`](./examples/simple) directory of this repository.
+
+For each file type, a [schema is provided](./schemas) (written in [JSON
+Schema](http://json-schema.org/)) which more formally defines the structure of
+the data. You can automatically verify the structural correctness of a data
 file against these schemas using [any of a number of
 validators](http://json-schema.org/implementations.html) (we recommend
 [jsonschema](https://github.com/Julian/jsonschema), a validator written Python
