@@ -129,4 +129,9 @@ the data. You can automatically verify the structural correctness of a data
 file against these schemas using [any of a number of
 validators](http://json-schema.org/implementations.html) (we recommend
 [jsonschema](https://github.com/Julian/jsonschema), a validator written Python
-with a straight-forward command-line interface.
+with a straight-forward command-line interface. For example, to validate one of
+the example files:
+
+    $ jsonschema -i examples/simple/machine.json schemas/machine.json
+
+
