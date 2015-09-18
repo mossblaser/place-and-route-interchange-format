@@ -95,7 +95,7 @@
                 "required": ["type", "vertices"]
             },
             {
-                "description": "Make sure a each of the supplied sets of nets do not overlap.",
+                "description": "Make sure a each of the supplied sets of edges do not overlap.",
                 "type": "object",
                 "properties": {
                     "type": {"type": "string", "pattern": "^disjoint_routes$"},
