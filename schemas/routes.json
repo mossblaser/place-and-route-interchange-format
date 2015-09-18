@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     
-    "title": "For each net, gives the route generated.",
-    "type": "array",
-    "items": {"$ref": "#/resources/routingTree"},
+    "title": "For each edge, gives the route generated.",
+    "type": "object",
+    "properties": {"$ref": "#/resources/routingTree"},
     
     "resources": {
         "routingTree": {

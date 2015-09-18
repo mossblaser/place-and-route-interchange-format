@@ -1,0 +1,19 @@
+{
+    "vertices_resources": {
+        "vertex0": {"cores": 1},
+        "vertex1": {"cores": 1, "sdram": 1024},
+        "vertex2": {"cores": 1, "sdram": 1024}
+    },
+    "edges": {
+        "edge0": {
+            "source": "vertex0",
+            "sinks": ["vertex0"],
+            "weight": 1.0
+        },
+        "edge1": {
+            "source": "vertex1",
+            "sinks": ["vertex0", "vertex2"],
+            "weight": 1.0
+        }
+    }
+}

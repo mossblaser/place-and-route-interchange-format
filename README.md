@@ -8,8 +8,8 @@ machine and defining routes between them is broadly split into these steps:
 * **Allocation**: Allocate specific chip resources to each vertex (e.g. cores,
   memory).
 * **Routing**: Generate routes to connect vertices according to a supplied set
-  of nets.
-* **Key Allocation**: Generate routing keys for each routed net.
+  of edges.
+* **Routing Key Allocation**: Generate routing keys for each routed edge.
 * **Routing Table Generation**: Generate routing tables.
 
 Terminology
@@ -20,7 +20,7 @@ The key pieces of terminology used are defined below:
 Application Graph
 :   The [hyper-graph](http://en.wikipedia.org/wiki/Hypergraph) which describes
     how an application's computational resources (the *vertices*) are connected
-    to each other by *nets*.
+    to each other by *edges*.
 
 Vertex
 :   A *vertex* in an *application graph*. Each vertex is mapped onto exactly one
@@ -32,11 +32,11 @@ Vertex
     
     *Vertices* are uniquely identified by a (short) unique string.
 
-Net
+Edge
 :   A (directed) connection from one *vertex* to a number of other *vertices*
-    in the *application graph*. During routing, nets are converted into
+    in the *application graph*. During routing, edges are converted into
     specific routes through a SpiNNaker machine which can be used to generate
-    routing tables. A net may also have a (positive) weight associated with it
+    routing tables. An edge may also have a (positive) weight associated with it
     which may be used as a hint by placement and routing algorithms.
 
 Resource
@@ -49,7 +49,7 @@ Resource
     resource types may be defined at will.
     
     * **"cores"**: SpiNNaker cores (including both monitor and application
-      cores) on a chip. Most vertices are allocated one of these.
+      cores) on a chip. Most vertices are allocated exactly one of these.
     * **"sdram"**: SDRAM, as allocated by SARK/Spin-1 API from the heap.
       Measured in bytes.
     
@@ -73,11 +73,10 @@ A place/route problem and solution is broken down into various individual
 algorithms. Initially, the following files are provided which describe the
 problem:
 
-* `vertices_resources.json`: Enumerates each vertex in the graph and the
-  resources it consumes.
-* `nets.json`: Enumerates the nets which connect those vertices together.
+* `graph.json`: Enumerates each vertex in the graph and the
+  resources it consumes. Also enumerates the edges between the vertices.
 * `machine.json`: Describes a SpiNNaker machine (dimensions, available
-  resources) into which the application must be mapped.
+  resources) into which the application must be placed and routed.
 * `constraints.json`: Describes a set of constraints on how the application
   should be placed/routed etc.
 
@@ -94,13 +93,13 @@ further file:
 Next, these files are supplied to a routing algorithm which produces another
 new file:
 
-* `routes.json`: This file describes the route to be taken by each net.
+* `routes.json`: This file describes the route to be taken by each edge.
 
-A key-generation algorithm can be used to generate routing keys for each net in
-the application, producing a new file:
+A routing key-generation algorithm can be used to generate routing keys for
+each edge in the application, producing a new file:
 
-* `keys.json`: For each net, gives the routing key and mask which will identify
-  it.
+* `routing_keys.json`: For each edge, gives the routing key and mask which will
+  identify it.
 
 A routing table generation algorithm combines the above files into routing
 tables for chips in the machine:
@@ -109,9 +108,98 @@ tables for chips in the machine:
   the routing table entries are enumerated.
 
 Tool authors are free to merge, break-apart and reorder any or all of these
-steps. For example, authors may wish to combine key generation and table
-generation. By respecting the format of these files, tools may (hopefully...)
-be freely combined.
+steps. For example, authors may wish to combine routing key generation and
+routing table generation. By respecting the format of these files, tools may
+(hopefully...) be freely combined.
+
+
+Constraints
+-----------
+
+The following is an enumeration of the constraint types available:
+
+* `location`: Force a specified vertex to always be placed on a certain chip.
+* `resource`: Force a specified vertex to always consume a particular resource
+  range on whichever chip it happens to be placed on.
+* `reserve_resource`: Reserve a specific resource range on all or a specific
+  chip.
+* `route_endpoint`: Make sure that when routing to a particular vertex that the
+  routes terminate on a particular link.
+* `same_chip`: Make sure a set of vertices are always placed on the same chip
+  together.
+* `disjoint_routes`: Ensure selected groups of edges' routes never intersect
+  eachother.
+
+Some example uses:
+
+* We have an external device connected to the west link of chip (0, 0)
+  represented by the vertex `mydevice`.
+  
+  ```
+  {
+      "type": "location",
+      "vertex": "mydevice",
+      "location": [0, 0]
+  },
+  {
+      "type": "route_endpoint",
+      "vertex": "mydevice",
+      "direction": "west"
+  }
+  ```
+
+* We want to prevent core 0 being used because it is reserved for the monitor
+  processor.
+  
+  ```
+  {
+      "type": "reserve_resource",
+      "resource": "cores",
+      "reservation": [0, 1]
+  }
+  ```
+
+* We always want the vertex "specialSnowflake" to be allocated to core 3 of
+  chip (1, 2).
+  
+  ```
+  {
+      "type": "location",
+      "vertex": "specialSnowflake",
+      "location": [1, 1]
+  },
+  {
+      "type": "resource",
+      "vertex": "specialSnowflake",
+      "resource": "cores",
+      "range": [3, 4]
+  }
+  ```
+
+* We want the vertices "fred" and "bob" to always be placed on the same chip
+  because they use some shared SDRAM.
+  
+  ```
+  {
+      "type": "same_chip",
+      "vertices": ["fred", "bob"]
+  }
+  ```
+
+* We have some fixed routes (`fr10`, `fr11` and `rf12`) which all terminate at
+  the same vertex and we'd like to ensure these not to overlap with another set
+  of fixed routes (`fr20` and `rf21`) whose paths must not overlap since that
+  would result in a cyclic fixed route existing!
+  
+  ```
+  {
+      "type": "disjoint_routes",
+      "edges": [
+          ["fr10", "fr11", "fr12`],
+          ["fr20", "fr21"]
+      ]
+  }
+  ```
 
 
 File Formats
@@ -120,8 +208,14 @@ File Formats
 All files are encoded using [JSON](http://www.json.org/), a simple
 human-readable, light-weight data-interchange format. High-performance JSON
 libraries are available for all popular programming languages (and plenty of
-unpopular ones too...). A complete example set of example files is provided in
-the [`examples/simple`](./examples/simple) directory of this repository.
+unpopular ones too...).
+
+### Examples
+
+A complete example set of example files is provided in the
+[`examples/simple`](./examples/simple) directory of this repository.
+
+### Schemas
 
 For each file type, a [schema is provided](./schemas) (written in [JSON
 Schema](http://json-schema.org/)) which more formally defines the structure of

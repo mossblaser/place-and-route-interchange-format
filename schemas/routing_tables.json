@@ -2,8 +2,8 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     
     "title": "Gives a set of routing table entries for all relevant chips in a system.",
-    "type": "array",
-    "items": {
+    "type": "object",
+    "additionalProperties": {
         "type": "object",
         "properties": {
             "chip": {

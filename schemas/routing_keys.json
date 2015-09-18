@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     
-    "title": "For each net, gives the routing key and mask.",
-    "type": "array",
-    "items": {
+    "title": "For each edge, gives the routing key and mask.",
+    "type": "object",
+    "additionalProperties": {
         "type": "object",
         "properties": {
             "key": {"$ref": "#/resources/keyValue"},

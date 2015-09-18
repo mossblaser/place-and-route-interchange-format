@@ -1,11 +1,11 @@
-[
-    {
+{
+    "edge0": {
         "chip": [2, 2],
         "children": [
             {"route": "core1", "next_hop": "vertex0"}
         ]
     },
-    {
+    "edge1": {
         "chip": [0, 0],
         "children": [
             {
@@ -28,4 +28,4 @@
             {"route": "core2", "next_hop": "vertex2"}
         ]
     }
-]
+}

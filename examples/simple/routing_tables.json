@@ -1,16 +1,15 @@
-[
-    {
+{
+    "edge0": {
         "chip": [0, 0],
         "entries": [
             {"key": 2, "mask": 4294967295, "directions": ["core2", "north-east"]}
         ]
     },
-    {
+    "edge1": {
         "chip": [2, 2],
         "entries": [
             {"key": 2, "mask": 4294967295, "directions": ["core1"]},
             {"key": 1, "mask": 4294967295, "directions": ["core1"]}
         ]
     }
-]
-
+}
