@@ -101,8 +101,9 @@ new file:
 A routing key-generation algorithm can be used to generate routing keys for
 each edge in the application, producing a new file:
 
-* `routing_keys.json`: For each edge, gives the routing key and mask which will
-  identify it.
+* `routing_keys.json`: For each edge, gives the multicast routing keys and
+  masks which are associated with it. Edges which do not represent multicast
+  routes may be omitted.
 
 A routing table generation algorithm combines the above files into routing
 tables for chips in the machine:

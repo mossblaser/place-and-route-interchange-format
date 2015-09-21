@@ -1,16 +1,19 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     
-    "title": "For each edge, gives the routing key and mask.",
+    "title": "For each edge, gives the list of routing keys and masks.",
     "type": "object",
     "additionalProperties": {
-        "type": "object",
-        "properties": {
-            "key": {"$ref": "#/resources/keyValue"},
-            "mask": {"$ref": "#/resources/keyValue"}
-        },
-        "additionalProperties": false,
-        "required": ["key", "mask"]
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "key": {"$ref": "#/resources/keyValue"},
+                "mask": {"$ref": "#/resources/keyValue"}
+            },
+            "additionalProperties": false,
+            "required": ["key", "mask"]
+        }
     },
     
     "resources": {
