@@ -32,9 +32,13 @@
                         "description": "The weight hint for this edge.",
                         "type": "number",
                         "minimum": 0.0
+                    },
+                    "type": {
+                        "description": "An application defined label indicating the type of this edge.",
+                        "type": "string"
                     }
                 },
-                "required": ["source", "sinks", "weight"],
+                "required": ["source", "sinks", "weight", "type"],
                 "additionalProperties": false
             }
         }

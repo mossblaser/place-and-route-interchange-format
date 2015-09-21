@@ -37,7 +37,10 @@ Edge
     in the *application graph*. During routing, edges are converted into
     specific routes through a SpiNNaker machine which can be used to generate
     routing tables. An edge may also have a (positive) weight associated with it
-    which may be used as a hint by placement and routing algorithms.
+    which may be used as a hint by placement and routing algorithms. Finally,
+    an edge may be labelled with a 'type' which may be interpreted by
+    applications arbitrarily. For example, the type may indicate the type of
+    SpiNNaker packet associated with the edge (e.g. multicast).
 
 Resource
 :   A *resource* is any finite resource available to a SpiNNaker chip (e.g.
