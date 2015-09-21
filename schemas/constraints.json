@@ -148,8 +148,8 @@
             "description": "A chip-to-chip link.",
             "type": "string",
             "enum": [
-                "east", "north-east", "north",
-                "west", "south-west", "south"
+                "east", "north_east", "north",
+                "west", "south_west", "south"
             ]
         },
         "core": {

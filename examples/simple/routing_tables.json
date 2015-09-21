@@ -2,7 +2,7 @@
     {
         "chip": [0, 0],
         "entries": [
-            {"key": 2, "mask": 4294967295, "directions": ["core2", "north-east"]}
+            {"key": 2, "mask": 4294967295, "directions": ["core2", "north_east"]}
         ]
     },
     {

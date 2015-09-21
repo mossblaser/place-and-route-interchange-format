@@ -9,12 +9,12 @@
         "chip": [0, 0],
         "children": [
             {
-                "route": "north-east",
+                "route": "north_east",
                 "next_hop": {
                     "chip": [1, 1],
                     "children": [
                         {
-                            "route": "north-east",
+                            "route": "north_east",
                             "next_hop": {
                                 "chip": [2, 2],
                                 "children": [
