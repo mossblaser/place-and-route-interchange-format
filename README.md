@@ -91,7 +91,9 @@ After this, these files are supplied an allocation algorithm which produces a
 further file:
 
 * `allocations.json`: For each vertex, gives the chip resources allocated to
-  it.
+  it. Optionally, allocations may be described seperately for each resource
+  type in files named `allocations_resourcename.json`. The internal file format
+  is identical.
 
 Next, these files are supplied to a routing algorithm which produces another
 new file:
