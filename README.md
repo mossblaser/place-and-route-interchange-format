@@ -131,6 +131,10 @@ The following is an enumeration of the constraint types available:
   routes terminate on a particular link.
 * `same_chip`: Make sure a set of vertices are always placed on the same chip
   together.
+* `share_resources`: If any of a set of vertices are placed on the same
+  chip, they may be allocated exactly overlapping resources. When placed on
+  different chips however, they behave as usual. All vertices under this
+  constraint must have identical resource requirements.
 * `disjoint_routes`: Ensure selected groups of edges' routes never intersect
   eachother.
 
@@ -187,6 +191,45 @@ Some example uses:
   {
       "type": "same_chip",
       "vertices": ["fred", "bob"]
+  }
+  ```
+
+* Say we have a block of memory which is common to two core-using vertices. If
+  the vertices are placed on the same chip then we'd like just one copy of the
+  memory block to be allocated to that chip. If the vertices are placed
+  seperately, however, the vertices must have their own copies of the memory.
+  
+  We first define the core-using vertices, and the memory blocks they use, as
+  follows:
+  
+  ```
+  {
+      "vertices_resources":{
+          "v0": {"cores": 1},
+          "m0": {"sdram": 1024},
+          "v1": {"cores": 1},
+          "m1": {"sdram": 1024},
+      },
+      ...
+  }
+  ```
+  
+  We then make sure that the SDRAM-representing vertices are always placed on
+  the same chip as the associated core, and state that the memory resources may
+  be shared.
+  
+  ```
+  {
+      "type": "same_chip",
+      "vertices": ["v0", "m0"]
+  },
+  {
+      "type": "same_chip",
+      "vertices": ["v1", "m1"]
+  },
+  {
+      "type": "share_resources",
+      "vertices": ["m0", "m1"]
   }
   ```
 
