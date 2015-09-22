@@ -1,9 +1,20 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     
-    "title": "For each vertex, gives the chip resources it was allocated on the chip it is placed on.",
+    "title": "For each vertex, gives the chip resources of a particular type that were allocated on the chip it is placed on.",
     "type": "object",
-    "additionalProperties": {"$ref": "#/resources/resourceAllocation"},
+    
+    "properties": {
+        "type": {
+            "description": "The resource type allocated in this file.",
+            "type": "string"
+        },
+        "allocations": {
+            "description": "The range of the current resource allocated to each vertx.",
+            "type": "object",
+            "additionalProperties": {"$ref": "#/resources/resourceRange"}
+        }
+    },
     
     "resources": {
         "resourceRange": {
@@ -13,11 +24,6 @@
                 {"description": "Start of range (inclusive)", "type": "integer"},
                 {"description": "End of range (exclusive)", "type": "integer"}
             ]
-        },
-        "resourceAllocation": {
-            "description": "Enumerates allocated on-chip resources.",
-            "type": "object",
-            "additionalProperties": {"$ref": "#/resources/resourceRange"}
         }
     }
 }

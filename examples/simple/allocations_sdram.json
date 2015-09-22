@@ -1,0 +1,8 @@
+{
+    "type": "sdram",
+    "allocations": {
+        "vertex1": [0, 1024],
+        "vertex2": [1024, 2048]
+    }
+}
+

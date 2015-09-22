@@ -1,0 +1,8 @@
+{
+    "type": "cores",
+    "allocations": {
+        "vertex0": [1, 2],
+        "vertex1": [1, 2],
+        "vertex2": [2, 3]
+    }
+}
