@@ -73,49 +73,225 @@ Tool-flow
 ---------
 
 A place/route problem and solution is broken down into various individual
-algorithms. Initially, the following files are provided which describe the
-problem:
+algorithms:
 
-* `graph.json`: Enumerates each vertex in the graph and the
-  resources it consumes. Also enumerates the edges between the vertices.
-* `machine.json`: Describes a SpiNNaker machine (dimensions, available
-  resources) into which the application must be placed and routed.
-* `constraints.json`: Describes a set of constraints on how the application
-  should be placed/routed etc.
-
-These files are supplied to a placement algorithm which produces a new file:
-
-* `placements.json`: For each vertex, gives the chip onto which it was placed.
-
-After this, these files are supplied an allocation algorithm which produces a
-further file:
-
-* `allocations_resourcename.json`: One file per resource type. Gives the
-  resource range allocated to each vertex.
-
-Next, these files are supplied to a routing algorithm which produces another
-new file:
-
-* `routes.json`: This file describes the route to be taken by each edge.
-
-A routing key-generation algorithm can be used to generate routing keys for
-each edge in the application, producing a new file:
-
-* `routing_keys.json`: For each edge, gives the multicast routing keys and
-  masks which are associated with it. Edges which do not represent multicast
-  routes may be omitted.
-
-A routing table generation algorithm combines the above files into routing
-tables for chips in the machine:
-
-* `routing_tables.json`: For each chip on which routing entries are required,
-  the routing table entries are enumerated.
+* Placement -- Assigns each vertex to a chip.
+* Allocation -- Assigns chip resources to each vertex.
+* Routing -- Generates routes for each edge.
+* Routing Table Generation/Compression -- Generates routing tables from a set
+  of routes.
 
 Tool authors are free to merge, break-apart and reorder any or all of these
 steps. For example, authors may wish to combine routing key generation and
 routing table generation. By respecting the format of these files, tools may
 (hopefully...) be freely combined.
 
+The following sections give an overview of the process including an informal
+overview of the each of the file formats used to describe intermediate results.
+
+### Describing the problem
+
+Initially, the following files are provided which describe the problem and
+machine into which it will be mapped:
+
+#### `machine.json`
+
+This file describes a SpiNNaker machine's topology and available resources. It
+contains a JSON object which in a simple case looks like the following:
+
+    {
+        "width": 12
+        "height": 12
+        "chip_resources": {
+            "cores": 18,
+            "sdram": 119275520
+        },
+        "dead_chips": []
+        "dead_links": []
+        "chip_resource_exceptions": []
+    }
+
+The base assumption is that all machines consist of a rectangular array of
+identical chips connected in a hexagonal torus, possibly with a few broken
+chips, links and missing/differing resources on some chips.
+
+The `width`, `height` and `chip_resources` members describe the dimensions of
+the machine and the resources available on each core. The types of resources
+may be application dependent but generally will include `cores` and `sdram`.
+
+The `dead_chips` member enumerates any dead or missing chips in the machine in
+the form of an array of two-element arrays of the form `[x, y]` giving the
+coordinates of dead chips. For example:
+
+    ...
+    "dead_chips": [ [1, 0], [2, 4] ],
+    ...
+
+Indicates chips (1, 0) and (2, 4) are dead and may not be used.
+
+The `dead_links` member enumerates any dead links in the machine in the form of
+an array of three-element arrays of the form `[x, y, link]`. `x` and `y` give
+the coordinates of the chip the dead link is sending from and `link` gives the
+direction of the link and is one of `"north"`, `"north_east"`, `"east"`,
+`"south"`, `"south_west"` and `"west"`. Note that all links in SpiNNaker
+machines are bidirectional and each direction is considered separately so
+*both* directions must be marked as dead to indicate both link directions are
+dead. For example:
+
+    ...
+    "dead_links": [ [1, 1, "north"], [1, 2, "south"] ],
+    ...
+
+In this example both directions of the link between chips (1, 1) and (1, 2) are
+marked as dead.
+
+Finally, individual chips may have different quantities of certain resources,
+for example, a different number of working cores. In this case all chips whose
+resources differ from the rest must be enumerated in the
+`chip_resource_exceptions` member which is an array of three-element arrays of
+the form `[x, y, {"resource": quantity, ...}]`. Here `x` and `y` give the
+coordinates of the chip whose resources differ and the JSON object enumerates
+the resources available on that chip. Note that *all* resource types listed in
+`chip_resources` must be given for each exception, even if some values remain
+the same. For example:
+
+    ...
+    "chip_resource_exceptions": [
+        [1, 1, {"cores": 17, "sdram": 119275520},
+        [2, 4, {"cores": 18, "sdram": 0},
+    ]
+    ...
+
+In this example, chip (1, 1) has only 17 working cores and chip (2, 4) has no
+working SDRAM. All other chips have the resources defined by `chip_resources`
+previously.
+
+#### `graph.json`
+
+This file enumerates the vertices and edges in the application graph which is
+to be placed and routed. It contains a JSON object as follows:
+
+    {
+        "vertices_resources": {
+            "vertex0": {"cores": 1},
+            "vertex1": {"cores": 1, "sdram": 1024},
+            "vertex2": {"cores": 1, "sdram": 1024}
+        },
+        "edges": {
+            "edge0": {
+                "source": "vertex0",
+                "sinks": ["vertex0"],
+                "weight": 1.0,
+                "type": "mc"
+            },
+            "edge1": {
+                "source": "vertex1",
+                "sinks": ["vertex0", "vertex2"],
+                "weight": 1.0,
+                "type": "mc"
+            }
+        }
+    }
+
+Here the `vertices_resources` member enumerates the resources consumed by each
+vertex in the problem. Vertices are uniquely identified by a user-defined
+string. Each vertex must have its own unique name. The resources consumed by a
+given vertex may be any subset of the resources defined in the machine
+description.
+
+The `edges` member enumerates any edges between vertices. Like vertices, edges
+must be given a unique string which is used to uniquely identify each edge. An
+edge is defined by a JSON object with four members as follows:
+
+* `source`: The name of the vertex at the source of the edge.
+* `sinks`: An array of vertices which are sinks of the edge.
+* `weight`: A floating point number which is a hint to placement/routing
+  algorithms indicating, e.g., the importance/traffic through a link. This may
+  be set to `1.0` in applications which don't care.
+* `type`: A user-defined string labelling the type of the edge. Used primarily
+  as metadata and algorithms are free to ignore this field as they see fit. May
+  be set to an empty string in applications which don't care.
+
+#### `constraints.json`
+
+This file contains a JSON array enumerating all the constraints applicable to
+the supplied application. Constraints are defined by JSON objects and are more
+fully defined in [the section describing the available
+constraints](#Constraints).
+
+
+### Placement Algorithms
+
+Placement algorithms take the above files as arguments and (attempt to) produce
+a set of placements which assigns each vertex to a specific chip in
+`placements.json`.
+
+#### `placements.json`
+
+A single JSON object in which for each vertex, the (x, y) coordinates of the
+chip it was placed on is given. For example:
+
+    {
+        "vertex0": [2, 2],
+        "vertex1": [0, 0],
+        "vertex2": [0, 0]
+    }
+
+### Allocation Algorithms
+
+The allocation algorithm takes the above files as input and produces several
+files named `allocations_resource.json`, one for each resource type allocated.
+For example, if `cores` and `sdram` are the two resource types in the machine;
+two files would be created: `allocations_cores.json` and
+`allocations_sdram.json`.
+
+#### `allocations_*.json`
+
+Each allocation file contains a JSON object with two members: `type` and
+`allocations`. The `type` member names the resource type allocated in the file.
+The `allocations` member contains a JSON object which gives the *range* of
+resources allocated to a particular vertex. For example,
+a `allocations_cores.json` file may look like:
+
+    {
+        "type": "cores",
+        "allocations": {
+            "vertex0": [1, 2],
+            "vertex1": [1, 2],
+            "vertex2": [2, 3],
+        }
+    }
+
+Note that the resource ranges are given as two-element arrays giving the start
+(inclusive) and end (exclusive) of the range. In the above example, all of the
+ranges indicate a single core has been allocated to each vertex.
+
+### Routing Algorithms
+
+Next, the above files are supplied to a routing algorithm which produces
+another new file `routes.json`. The router must also be told which resource
+type represents SpiNNaker *cores* since it needs to know which core sink
+vertices are on to produce routes which end on those cores.
+
+#### `routes.json`
+
+*TODO*
+
+### Routing Table Generation/Compression
+
+The routing table generator may take any or all of the above files along with a
+file `routing_keys.json` which enumerates the key and mask pairs associated
+with each edge which must be included in SpiNNaker's multicast routing tables.
+The output of this program is a file `routing_tables.json` which contains the
+multicast routing tables for each SpiNNaker chip.
+
+#### `routing_keys.json`
+
+*TODO*
+
+#### `routing_tables.json`
+
+*TODO*
 
 Constraints
 -----------
