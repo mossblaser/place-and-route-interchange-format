@@ -317,7 +317,8 @@ The following is an enumeration of the constraint types available:
 Some example uses:
 
 * We have an external device connected to the west link of chip (0, 0)
-  represented by the vertex `mydevice`.
+  represented by the vertex `mydevice`. A `location` and `route_endpoint`
+  constraint are used in tandem:
   
   ```
   {
@@ -344,7 +345,7 @@ Some example uses:
   ```
 
 * We always want the vertex "specialSnowflake" to be allocated to core 3 of
-  chip (1, 2).
+  chip (1, 2). A `location` and `resource` constraint are used in tandem:
   
   ```
   {
