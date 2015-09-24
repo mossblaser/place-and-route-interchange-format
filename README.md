@@ -252,8 +252,9 @@ two files would be created: `allocations_cores.json` and
 Each allocation file contains a JSON object with two members: `type` and
 `allocations`. The `type` member names the resource type allocated in the file.
 The `allocations` member contains a JSON object which gives the *range* of
-resources allocated to a particular vertex. For example,
-a `allocations_cores.json` file may look like:
+resources allocated to a particular vertex. If a vertex does not have any of
+the resource type allocated, the vertex must not be included in the list. For
+example, a `allocations_cores.json` file may look like:
 
     {
         "type": "cores",
