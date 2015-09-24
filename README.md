@@ -118,6 +118,8 @@ chips, links and missing/differing resources on some chips.
 The `width`, `height` and `chip_resources` members describe the dimensions of
 the machine and the resources available on each core. The types of resources
 may be application dependent but generally will include `cores` and `sdram`.
+Note that `chip_resources` must enumerate every type of resource used anywhere,
+even if most chips do not consume every resource type.
 
 The `dead_chips` member enumerates any dead or missing chips in the machine in
 the form of an array of two-element arrays of the form `[x, y]` giving the
@@ -151,20 +153,20 @@ resources differ from the rest must be enumerated in the
 `chip_resource_exceptions` member which is an array of three-element arrays of
 the form `[x, y, {"resource": quantity, ...}]`. Here `x` and `y` give the
 coordinates of the chip whose resources differ and the JSON object enumerates
-the resources available on that chip. Note that *all* resource types listed in
-`chip_resources` must be given for each exception, even if some values remain
-the same. For example:
+the differences in resources available on that chip compared with
+`chip_resources`. Note that any resource type not listed in the exception will
+be assumed to have the same value as defined in `chip_resources`:
 
     ...
     "chip_resource_exceptions": [
-        [1, 1, {"cores": 17, "sdram": 119275520},
-        [2, 4, {"cores": 18, "sdram": 0},
+        [1, 1, {"cores": 17}],
+        [2, 4, {"sdram": 0}],
     ]
     ...
 
-In this example, chip (1, 1) has only 17 working cores and chip (2, 4) has no
-working SDRAM. All other chips have the resources defined by `chip_resources`
-previously.
+In this example, chip (1, 1) has only 17 working cores (but a normal amount of
+ram) and chip (2, 4) has no working SDRAM (but the normal 18 cores). All other
+chips have the resources previously defined by `chip_resources`.
 
 #### `graph.json`
 

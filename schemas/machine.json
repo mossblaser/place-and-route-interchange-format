@@ -15,7 +15,7 @@
             "minimum": 1
         },
         "chip_resources": {
-            "description": "The resources available on chips not listed in chip_resource_exceptions",
+            "description": "The resources available on chips not listed in chip_resource_exceptions. All resource types available on any chip must be enumerated, even if zero in the common case.",
             "allOf": [
                 {"$ref": "#/resources/resourceSet"},
                 {"minProperties": 1}
@@ -38,7 +38,7 @@
                         "minimum": 0
                     },
                     {
-                        "description": "The resources available to the exceptional chip. Must list exactly the same resources as chip_resources.",
+                        "description": "The resources available to the exceptional chip. Must list a subset of the resources in chip_resources.",
                         "allOf": [
                             {"$ref": "#/resources/resourceSet"},
                             {"minProperties": 1}
