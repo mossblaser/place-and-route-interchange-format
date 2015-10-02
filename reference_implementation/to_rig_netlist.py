@@ -19,7 +19,7 @@ from common import unpack_graph, unpack_machine, unpack_constraints, \
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Generate routing tables from JSON routes and keys.")
+        description="Generate pickled Rig netlists from a set of JSON files")
 
     parser.add_argument("output",
                         help="the file to write the netlist to")
