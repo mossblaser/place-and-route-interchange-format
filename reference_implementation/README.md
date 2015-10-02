@@ -5,6 +5,9 @@ This implementation uses Rig's place and route facilities to perform place and
 route via the supplied file formats. The implementation will at some point get
 a full suite of tests and get pulled into Rig but for now it will live here...
 
+Rig Interface
+-------------
+
 You'll need Rig v0.8.0 or later installed to use these scripts. You can grab
 this from [PyPI](https://pypi.python.org/pypi/rig/) as usual:
 
@@ -56,3 +59,34 @@ See the following Rig documentation pages for a list of available algorithms:
 Note that the default placer (`sa`) can be quite slow. Try `hilbert` for a fast
 but lower quality placement. If you are using the `sa` placer, try adding `-vv`
 so that you can see the debug output from the algorithm as it runs.
+
+
+Rig-PAR-diagram tool
+--------------------
+
+[Rig-PAR-diagram](https://github.com/project-rig/rig-par-diagram) is a tool
+designed to generate diagrams of placement and routing solutions and SpiNNaker
+machines. At present it accepts rig netlsits (just the pickled rig
+datastructures) but in the future it will read these JSON files. A script is
+provided which produces a suitable netlist file which will work with
+rig-par-diagram v0.0.4 and later which can be installed using:
+
+    pip install "rig-par-diagram>=0.0.4"
+
+And used like so:
+
+    # Convert the JSON files into a Rig netlist
+    python to_rig_netlist.py --graph=../examples/simple/graph.json \
+                             --machine=../examples/simple/machine.json \
+                             --constraints=../examples/simple/constraints.json \
+                             --placements=../examples/simple/placements.json \
+                             --allocations-prefix=../examples/simple/allocations_ \
+                             --routes=../examples/simple/routes.json \
+                             netlist.pcl
+    
+    # Draw the netlist with rig-par-diagram
+    rig-par-diagram netlist.pcl netlist.png
+
+To produce an image like this:
+
+![Example netlist figure](./netlist.png)
