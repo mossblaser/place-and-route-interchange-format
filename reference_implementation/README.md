@@ -5,6 +5,10 @@ This implementation uses Rig's place and route facilities to perform place and
 route via the supplied file formats. The implementation will at some point get
 a full suite of tests and get pulled into Rig but for now it will live here...
 
+You'll need Rig v0.8.0 or later installed to use these scripts. You can grab
+this from [PyPI](https://pypi.python.org/pypi/rig/) as usual:
+
+    pip install "rig>=0.8.0"
 
 Example usage:
 
