@@ -6,7 +6,7 @@ Common routines for converting to/from Rig's datastructures and JSON.
 
 import logging
 
-from six import iteritems, itervalues
+from six import iteritems
 
 from rig.netlist import Net
 from rig.machine import Machine, Links
@@ -22,12 +22,13 @@ LINK_LOOKUP = {l.name: l for l in Links}
 def unpack_graph(json_graph):
     """Get vertices_resources and nets out of a JSON graph."""
     vertices_resources = json_graph["vertices_resources"]
-    nets = [
-        Net(edge["source"], edge["sinks"], edge["weight"])
-        for edge in itervalues(json_graph["edges"])
-    ]
+    net_names = {
+        Net(edge["source"], edge["sinks"], edge["weight"]): name
+        for name, edge in iteritems(json_graph["edges"])
+    }
+    nets = list(net_names)
 
-    return vertices_resources, nets
+    return vertices_resources, nets, net_names
 
 
 def unpack_machine(json_machine):
@@ -84,3 +85,20 @@ def unpack_constraints(json_constraints):
 def unpack_placements(json_placements):
     """Get placements out of a JSON version."""
     return {v: (x, y) for v, (x, y) in iteritems(json_placements)}
+
+
+def unpack_allocations(json_allocations):
+    """Get allocations out of a JSON version.
+
+    Note that this expects multiple JSON allocation files' contents enumerated
+    in a list.
+    """
+    # XXX: Won't include vertices with no resources of any type...
+    allocations = {}
+    for json_allocation in json_allocations:
+        resource = json_allocation["type"]
+        for v, (s, e) in iteritems(json_allocation["allocations"]):
+            a = allocations.setdefault(v, {})
+            a[resource] = slice(s, e)
+
+    return allocations

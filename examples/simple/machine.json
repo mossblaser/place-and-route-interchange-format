@@ -3,8 +3,7 @@
     "height": 8,
     "chip_resources": {
         "cores": 18,
-        "sdram": 119275520,
-        "sram": 24320
+        "sdram": 119275520
     },
     "dead_chips": [
         [0, 4],

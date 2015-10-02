@@ -25,6 +25,17 @@ Example usage:
                     ../examples/simple/constraints.json \
                     ../examples/simple/placements.json \
                     allocations_
+    
+    # Route the example netlist (note using the example placements and
+    # allocations, not the ones generated above). Note that unless
+    # `--core-resource` is given, the resource type 'cores' will be assumed for
+    # cores.
+    rig_route.py ../examples/simple/graph.json \
+                 ../examples/simple/machine.json \
+                 ../examples/simple/constraints.json \
+                 ../examples/simple/placements.json \
+                 ../examples/simple/allocations_ \
+                 > routes.json
 
 See the `--help` for each command for more details.
 

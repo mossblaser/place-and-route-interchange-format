@@ -38,7 +38,7 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.INFO)
 
     with open(args.graph, "r") as f:
-        vertices_resources, nets = unpack_graph(json.load(f))
+        vertices_resources, nets, net_names = unpack_graph(json.load(f))
 
     with open(args.machine, "r") as f:
         machine = unpack_machine(json.load(f))
