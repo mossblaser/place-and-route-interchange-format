@@ -13,13 +13,7 @@ import argparse
 
 from importlib import import_module
 
-from six import itervalues
-
-from rig.netlist import Net
-from rig.machine import Machine, Links
-from rig.place_and_route.constraints import \
-    LocationConstraint, ReserveResourceConstraint, RouteEndpointConstraint, \
-    SameChipConstraint
+from common import unpack_graph, unpack_machine, unpack_constraints
 
 
 if __name__ == "__main__":
@@ -44,61 +38,16 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.INFO)
 
     with open(args.graph, "r") as f:
-        graph = json.load(f)
-        vertices_resources = graph["vertices_resources"]
-        nets = [
-            Net(edge["source"], edge["sinks"], edge["weight"])
-            for edge in itervalues(graph["edges"])
-        ]
+        vertices_resources, nets = unpack_graph(json.load(f))
 
     with open(args.machine, "r") as f:
-        machine_json = json.load(f)
-        link_lookup = {l.name: l for l in Links}
-        machine = Machine(width=machine_json["width"],
-                          height=machine_json["height"],
-                          chip_resources=machine_json["chip_resources"],
-                          chip_resource_exceptions={
-                              (x, y): {resource: r.get(resource, 0)
-                                       for resource
-                                       in machine_json["chip_resources"]}
-                              for x, y, r
-                              in machine_json["chip_resource_exceptions"]},
-                          dead_chips=set((x, y)
-                                         for x, y
-                                         in machine_json["dead_chips"]),
-                          dead_links=set((x, y, link_lookup[link])
-                                         for x, y, link
-                                         in machine_json["dead_links"]))
+        machine = unpack_machine(json.load(f))
 
-    constraints = []
     if args.constraints:
         with open(args.constraints, "r") as f:
-            for json_constraint in json.load(f):
-                if json_constraint["type"] == "location":
-                    constraints.append(
-                        LocationConstraint(json_constraint["vertex"],
-                                           tuple(json_constraint["location"])))
-                elif json_constraint["type"] == "reserve_resource":
-                    constraints.append(
-                        ReserveResourceConstraint(
-                            json_constraint["resource"],
-                            slice(*json_constraint["reservation"]),
-                            (tuple(json_constraint["location"])
-                             if json_constraint.get("location") is not None
-                             else None)))
-                elif json_constraint["type"] == "route_endpoint":
-                    constraints.append(
-                        RouteEndpointConstraint(
-                            json_constraint["vertex"],
-                            link_lookup[json_constraint["route"]]))
-                elif json_constraint["type"] == "same_chip":
-                    constraints.append(
-                        SameChipConstraint(
-                            json_constraint["vertices"]))
-                else:
-                    logging.warning(
-                        "Unsupported constraint type '{}'".format(
-                            json_constraint["type"]))
+            constraints = unpack_constraints(json.load(f))
+    else:
+        constraints = []
 
     if args.algorithm:
         try:
