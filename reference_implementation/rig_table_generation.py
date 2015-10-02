@@ -26,6 +26,8 @@ if __name__ == "__main__":
                         help="a JSON file describing the routes")
     parser.add_argument("--routing-keys", "-k", required=True,
                         help="a JSON file describing the keys for each net")
+    parser.add_argument("--routing-tables", "-t", required=True,
+                        help="a JSON file to write the routing tables to")
     parser.add_argument("--keep-default-routes", "-K", action="store_true",
                         help="do not remove default routes from tables")
     parser.add_argument("--verbose", "-v", action="count", default=0,
@@ -46,17 +48,18 @@ if __name__ == "__main__":
                                   net_keys,
                                   not args.keep_default_routes)
 
-    print(json.dumps([
-        {
-            "chip": xy,
-            "entries": [
-                {
-                    "key": entry.key,
-                    "mask": entry.mask,
-                    "directions": [route_name(r) for r in entry.route]
-                }
-                for entry in entries
-            ]
-        }
-        for xy, entries in iteritems(tables)
-    ]))
+    with open(args.routing_tables, "w") as f:
+        json.dump([
+            {
+                "chip": xy,
+                "entries": [
+                    {
+                        "key": entry.key,
+                        "mask": entry.mask,
+                        "directions": [route_name(r) for r in entry.route]
+                    }
+                    for entry in entries
+                ]
+            }
+            for xy, entries in iteritems(tables)
+        ], f)

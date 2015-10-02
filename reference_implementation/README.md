@@ -19,7 +19,7 @@ Example usage:
     python rig_place.py --graph=../examples/simple/graph.json \
                         --machine=../examples/simple/machine.json \
                         --constraints=../examples/simple/constraints.json \
-                        > placements.json
+                        --placements=placements.json
     
     # Allocate the example netlist (note using the example placement, not the
     # one generated above).
@@ -27,7 +27,8 @@ Example usage:
                            --machine=../examples/simple/machine.json \
                            --constraints=../examples/simple/constraints.json \
                            --placements=../examples/simple/placements.json \
-                           --allocations-prefix=allocations_
+                           --allocations=cores:allocations_cores.json \
+                           --allocations=sdram:allocations_sdram.json
     
     # Route the example netlist (note using the example placements and
     # allocations, not the ones generated above). Note that unless
@@ -37,13 +38,14 @@ Example usage:
                         --machine=../examples/simple/machine.json \
                         --constraints=../examples/simple/constraints.json \
                         --placements=../examples/simple/placements.json \
-                        --allocations-prefix=../examples/simple/allocations_ \
-                        > routes.json
+                        --allocations=cores:../examples/simple/allocations_cores.json \
+                        --allocations=sdram:../examples/simple/allocations_sdram.json \
+                        --routes=routes.json
     
     # Generate a set of routing tables using the example routes.
     python rig_table_generation.py --routes=../examples/simple/routes.json \
                                    --routing-keys=../examples/simple/routing_keys.json \
-                                   > routing_tables.json
+                                   --routing-tables=routing_tables.json
 
 See the `--help` for each command for more details.
 

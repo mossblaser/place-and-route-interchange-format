@@ -32,8 +32,10 @@ if __name__ == "__main__":
                         help="a JSON file describing the constraints")
     parser.add_argument("--placements", "-p", required=True,
                         help="a JSON file describing the placements")
-    parser.add_argument("--allocations-prefix", "-a", required=True,
-                        help="prefix for allocation filenames")
+    parser.add_argument("--allocations", "-a", required=True, action="append",
+                        help="Allocation filenames in the form "
+                        "resource:filneame. Must be given once for each "
+                        "resource type.")
     parser.add_argument("--algorithm", "-A",
                         help="the allocation algorithm to use")
     parser.add_argument("--verbose", "-v", action="count", default=0,
@@ -71,9 +73,9 @@ if __name__ == "__main__":
     allocations = allocator(vertices_resources, nets, machine, constraints,
                             placements)
 
-    for resource in machine.chip_resources:
-        with open("{}{}.json".format(args.allocations_prefix, resource),
-                  "w") as f:
+    for resource_filename in args.allocations:
+        resource, _, filename = resource_filename.partition(":")
+        with open(filename, "w") as f:
             json.dump({
                 "type": resource,
                 "allocations": {

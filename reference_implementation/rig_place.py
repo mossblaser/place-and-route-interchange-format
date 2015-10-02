@@ -26,6 +26,8 @@ if __name__ == "__main__":
                         help="a JSON file describing the SpiNNaker machine")
     parser.add_argument("--constraints", "-c", required=True,
                         help="a JSON file describing the constraints")
+    parser.add_argument("--placements", "-p", required=True,
+                        help="the filename to write the placements to")
     parser.add_argument("--algorithm", "-A",
                         help="the placement algorithm to use")
     parser.add_argument("--verbose", "-v", action="count", default=0,
@@ -59,4 +61,5 @@ if __name__ == "__main__":
 
     placements = placer(vertices_resources, nets, machine, constraints)
 
-    print(json.dumps(placements))
+    with open(args.placements, "w") as f:
+        json.dump(placements, f)
