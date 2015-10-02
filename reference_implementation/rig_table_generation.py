@@ -22,11 +22,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Generate routing tables from JSON routes and keys.")
 
-    parser.add_argument("routes",
+    parser.add_argument("--routes", "-r", required=True,
                         help="a JSON file describing the routes")
-    parser.add_argument("keys",
+    parser.add_argument("--routing-keys", "-k", required=True,
                         help="a JSON file describing the keys for each net")
-    parser.add_argument("--keep-default-routes", "-k", action="store_true",
+    parser.add_argument("--keep-default-routes", "-K", action="store_true",
                         help="do not remove default routes from tables")
     parser.add_argument("--verbose", "-v", action="count", default=0,
                         help="verbosity level (may be given multiple times)")
@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     with open(args.routes, "r") as f:
         routes = unpack_routes(json.load(f))
-    with open(args.keys, "r") as f:
+    with open(args.routing_keys, "r") as f:
         net_keys = unpack_net_keys(json.load(f))
 
     tables = build_routing_tables(routes,

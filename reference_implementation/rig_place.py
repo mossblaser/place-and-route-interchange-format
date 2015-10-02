@@ -20,13 +20,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Place a JSON netlist using rig's placement algorithms.")
 
-    parser.add_argument("graph",
+    parser.add_argument("--graph", "-g", required=True,
                         help="a JSON file describing the problem graph")
-    parser.add_argument("machine",
+    parser.add_argument("--machine", "-m", required=True,
                         help="a JSON file describing the SpiNNaker machine")
-    parser.add_argument("constraints",
+    parser.add_argument("--constraints", "-c", required=True,
                         help="a JSON file describing the constraints")
-    parser.add_argument("--algorithm", "-a",
+    parser.add_argument("--algorithm", "-A",
                         help="the placement algorithm to use")
     parser.add_argument("--verbose", "-v", action="count", default=0,
                         help="verbosity level (may be given multiple times)")

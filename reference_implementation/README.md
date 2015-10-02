@@ -13,34 +13,34 @@ this from [PyPI](https://pypi.python.org/pypi/rig/) as usual:
 Example usage:
 
     # Place the example netlist
-    rig_place.py ../examples/simple/graph.json \
-                 ../examples/simple/machine.json \
-                 ../examples/simple/constraints.json \
-                 > placements.json
+    python rig_place.py --graph=../examples/simple/graph.json \
+                        --machine=../examples/simple/machine.json \
+                        --constraints=../examples/simple/constraints.json \
+                        > placements.json
     
     # Allocate the example netlist (note using the example placement, not the
     # one generated above).
-    rig_allocate.py ../examples/simple/graph.json \
-                    ../examples/simple/machine.json \
-                    ../examples/simple/constraints.json \
-                    ../examples/simple/placements.json \
-                    allocations_
+    python rig_allocate.py --graph=../examples/simple/graph.json \
+                           --machine=../examples/simple/machine.json \
+                           --constraints=../examples/simple/constraints.json \
+                           --placements=../examples/simple/placements.json \
+                           --allocations-prefix=allocations_
     
     # Route the example netlist (note using the example placements and
     # allocations, not the ones generated above). Note that unless
     # `--core-resource` is given, the resource type 'cores' will be assumed for
     # cores.
-    rig_route.py ../examples/simple/graph.json \
-                 ../examples/simple/machine.json \
-                 ../examples/simple/constraints.json \
-                 ../examples/simple/placements.json \
-                 ../examples/simple/allocations_ \
-                 > routes.json
+    python rig_route.py --graph=../examples/simple/graph.json \
+                        --machine=../examples/simple/machine.json \
+                        --constraints=../examples/simple/constraints.json \
+                        --placements=../examples/simple/placements.json \
+                        --allocations-prefix=../examples/simple/allocations_ \
+                        > routes.json
     
     # Generate a set of routing tables using the example routes.
-    rig_table_generation.py ../examples/simple/routes.json \
-                            ../examples/simple/routing_keys.json \
-                            > routing_tables.json
+    python rig_table_generation.py --routes=../examples/simple/routes.json \
+                                   --routing-keys=../examples/simple/routing_keys.json \
+                                   > routing_tables.json
 
 See the `--help` for each command for more details.
 

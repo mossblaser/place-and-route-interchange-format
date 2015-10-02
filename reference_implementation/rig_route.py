@@ -26,20 +26,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Route a JSON netlist using rig's routing algorithms.")
 
-    parser.add_argument("graph",
+    parser.add_argument("--graph", "-g", required=True,
                         help="a JSON file describing the problem graph")
-    parser.add_argument("machine",
+    parser.add_argument("--machine", "-m", required=True,
                         help="a JSON file describing the SpiNNaker machine")
-    parser.add_argument("constraints",
+    parser.add_argument("--constraints", "-c", required=True,
                         help="a JSON file describing the constraints")
-    parser.add_argument("placements",
+    parser.add_argument("--placements", "-p", required=True,
                         help="a JSON file describing the placements")
-    parser.add_argument("allocations_prefix",
+    parser.add_argument("--allocations-prefix", "-a", required=True,
                         help="prefix for allocation filenames")
-    parser.add_argument("--core-resource", "-c", default="cores",
+    parser.add_argument("--core-resource", "-C", default="cores",
                         help="the name of the 'core' resource type "
                              "(default: %{default})")
-    parser.add_argument("--algorithm", "-a",
+    parser.add_argument("--algorithm", "-A",
                         help="the routing algorithm to use")
     parser.add_argument("--verbose", "-v", action="count", default=0,
                         help="verbosity level (may be given multiple times)")
