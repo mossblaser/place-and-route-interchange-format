@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+
+"""
+A script which uses a routing table generator from Rig to generate routing
+tables from a supplied set of routes.
+"""
+
+import logging
+
+import json
+
+import argparse
+
+from six import iteritems
+
+from rig.place_and_route.utils import build_routing_tables
+
+from common import unpack_routes, unpack_net_keys, route_name
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Generate routing tables from JSON routes and keys.")
+
+    parser.add_argument("routes",
+                        help="a JSON file describing the routes")
+    parser.add_argument("keys",
+                        help="a JSON file describing the keys for each net")
+    parser.add_argument("--keep-default-routes", "-k", action="store_true",
+                        help="do not remove default routes from tables")
+    parser.add_argument("--verbose", "-v", action="count", default=0,
+                        help="verbosity level (may be given multiple times)")
+    args = parser.parse_args()
+
+    if args.verbose >= 2:
+        logging.basicConfig(level=logging.DEBUG)
+    elif args.verbose >= 1:
+        logging.basicConfig(level=logging.INFO)
+
+    with open(args.routes, "r") as f:
+        routes = unpack_routes(json.load(f))
+    with open(args.keys, "r") as f:
+        net_keys = unpack_net_keys(json.load(f))
+
+    tables = build_routing_tables(routes,
+                                  net_keys,
+                                  not args.keep_default_routes)
+
+    print(json.dumps([
+        {
+            "chip": xy,
+            "entries": [
+                {
+                    "key": entry.key,
+                    "mask": entry.mask,
+                    "directions": [route_name(r) for r in entry.route]
+                }
+                for entry in entries
+            ]
+        }
+        for xy, entries in iteritems(tables)
+    ]))

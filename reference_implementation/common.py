@@ -10,6 +10,8 @@ from six import iteritems
 
 from rig.netlist import Net
 from rig.machine import Machine, Links
+from rig.routing_table import Routes
+from rig.place_and_route.routing_tree import RoutingTree
 from rig.place_and_route.constraints import \
     LocationConstraint, ReserveResourceConstraint, RouteEndpointConstraint, \
     SameChipConstraint
@@ -17,6 +19,12 @@ from rig.place_and_route.constraints import \
 
 # A lookup from link name (string) to Links enum entry.
 LINK_LOOKUP = {l.name: l for l in Links}
+ROUTE_LOOKUP = {r.name.replace("core_", "core"): r for r in Routes}
+
+
+def route_name(route):
+    """Get the name of a Routes object."""
+    return route.name if route.is_link else "core{}".format(route.core_num)
 
 
 def unpack_graph(json_graph):
@@ -102,3 +110,25 @@ def unpack_allocations(json_allocations):
             a[resource] = slice(s, e)
 
     return allocations
+
+
+def unpack_routes(routes_json):
+    """Get a set of Routes from a JSON equivilent."""
+    def json_to_routing_tree(json_route):
+        return RoutingTree(tuple(json_route["chip"]),
+                           set((ROUTE_LOOKUP[child["route"]],
+                                (json_to_routing_tree(child["next_hop"])
+                                 if isinstance(child["next_hop"], dict)
+                                 else child["next_hop"]))
+                               for child in json_route["children"]))
+    return {name: json_to_routing_tree(json_route)
+            for name, json_route in iteritems(routes_json)}
+
+
+def unpack_net_keys(keys_json):
+    """Get a set of routing keys from a JSON equivilent."""
+    assert all(len(km) == 1 for name, km in iteritems(keys_json)), \
+        "Nets with more than one key/mask pair are not (yet) supported."
+    return {name: (km[0]["key"], km[0]["mask"])
+            for name, km in iteritems(keys_json)
+            if len(km) == 1}

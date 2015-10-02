@@ -36,10 +36,15 @@ Example usage:
                  ../examples/simple/placements.json \
                  ../examples/simple/allocations_ \
                  > routes.json
+    
+    # Generate a set of routing tables using the example routes.
+    rig_table_generation.py ../examples/simple/routes.json \
+                            ../examples/simple/routing_keys.json \
+                            > routing_tables.json
 
 See the `--help` for each command for more details.
 
-All commands accept an `--algorithm` argument which allows the user to chose
+Most commands accept an `--algorithm` argument which allows the user to chose
 the algorithm to use rather than just using the Rig default.
 
 See the following Rig documentation pages for a list of available algorithms:

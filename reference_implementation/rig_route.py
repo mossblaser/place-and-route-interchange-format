@@ -19,7 +19,7 @@ from rig.routing_table import Routes
 from rig.place_and_route.routing_tree import RoutingTree
 
 from common import unpack_graph, unpack_machine, unpack_constraints, \
-    unpack_placements, unpack_allocations
+    unpack_placements, unpack_allocations, route_name
 
 
 if __name__ == "__main__":
@@ -89,7 +89,7 @@ if __name__ == "__main__":
             "chip": node.chip,
             "children": [
                 {
-                    "route": (route.name
+                    "route": (route_name(route)
                               if isinstance(route, Routes)
                               else route),
                     "next_hop": (routing_tree_to_json(obj)
