@@ -18,13 +18,13 @@ from common import unpack_graph, unpack_machine, unpack_constraints
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Place a JSON netlist using rig's placement algorithm.")
+        description="Place a JSON netlist using rig's placement algorithms.")
 
     parser.add_argument("graph",
                         help="a JSON file describing the problem graph")
     parser.add_argument("machine",
                         help="a JSON file describing the SpiNNaker machine")
-    parser.add_argument("constraints", nargs='?',
+    parser.add_argument("constraints",
                         help="a JSON file describing the constraints")
     parser.add_argument("--algorithm", "-a",
                         help="the placement algorithm to use")
@@ -43,11 +43,8 @@ if __name__ == "__main__":
     with open(args.machine, "r") as f:
         machine = unpack_machine(json.load(f))
 
-    if args.constraints:
-        with open(args.constraints, "r") as f:
-            constraints = unpack_constraints(json.load(f))
-    else:
-        constraints = []
+    with open(args.constraints, "r") as f:
+        constraints = unpack_constraints(json.load(f))
 
     if args.algorithm:
         try:

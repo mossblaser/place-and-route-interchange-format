@@ -6,7 +6,7 @@ Common routines for converting to/from Rig's datastructures and JSON.
 
 import logging
 
-from six import itervalues
+from six import iteritems, itervalues
 
 from rig.netlist import Net
 from rig.machine import Machine, Links
@@ -79,3 +79,8 @@ def unpack_constraints(json_constraints):
                 "Unsupported constraint type '{}'".format(
                     json_constraint["type"]))
     return constraints
+
+
+def unpack_placements(json_placements):
+    """Get placements out of a JSON version."""
+    return {v: (x, y) for v, (x, y) in iteritems(json_placements)}
