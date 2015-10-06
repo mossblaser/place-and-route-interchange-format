@@ -45,7 +45,10 @@ def unpack_machine(json_machine):
                    height=json_machine["height"],
                    chip_resources=json_machine["chip_resources"],
                    chip_resource_exceptions={
-                       (x, y): {resource: r.get(resource, 0)
+                       (x, y): {resource: r.get(
+                                    resource,
+                                    json_machine["chip_resources"][resource]
+                                )
                                 for resource
                                 in json_machine["chip_resources"]}
                        for x, y, r
