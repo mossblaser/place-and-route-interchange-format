@@ -2,14 +2,14 @@
     {
         "chip": [0, 0],
         "entries": [
-            {"key": 2, "mask": 4294967295, "directions": ["core2", "north_east"]}
+            {"key": 2, "mask": 4294967295, "directions": ["core_2", "north_east"]}
         ]
     },
     {
         "chip": [2, 2],
         "entries": [
-            {"key": 2, "mask": 4294967295, "directions": ["core1"]},
-            {"key": 1, "mask": 4294967295, "directions": ["core1"]}
+            {"key": 2, "mask": 4294967295, "directions": ["core_1"]},
+            {"key": 1, "mask": 4294967295, "directions": ["core_1"]}
         ]
     }
 ]

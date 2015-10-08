@@ -19,12 +19,13 @@ from rig.place_and_route.constraints import \
 
 # A lookup from link name (string) to Links enum entry.
 LINK_LOOKUP = {l.name: l for l in Links}
-ROUTE_LOOKUP = {r.name.replace("core_", "core"): r for r in Routes}
+ROUTE_LOOKUP = {"core_{}".format(r.core_num) if r.is_core else r.name: r
+                for r in Routes}
 
 
 def route_name(route):
     """Get the name of a Routes object."""
-    return route.name if route.is_link else "core{}".format(route.core_num)
+    return route.name if route.is_link else "core_{}".format(route.core_num)
 
 
 def unpack_graph(json_graph):

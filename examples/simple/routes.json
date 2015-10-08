@@ -2,7 +2,7 @@
     "edge0": {
         "chip": [2, 2],
         "children": [
-            {"route": "core1", "next_hop": "vertex0"}
+            {"route": "core_1", "next_hop": "vertex0"}
         ]
     },
     "edge1": {
@@ -18,14 +18,14 @@
                             "next_hop": {
                                 "chip": [2, 2],
                                 "children": [
-                                    {"route": "core1", "next_hop": "vertex0"}
+                                    {"route": "core_1", "next_hop": "vertex0"}
                                 ]
                             }
                         }
                     ]
                 }
             },
-            {"route": "core2", "next_hop": "vertex2"}
+            {"route": "core_2", "next_hop": "vertex2"}
         ]
     }
 }
