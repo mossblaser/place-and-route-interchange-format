@@ -31,8 +31,10 @@ if __name__ == "__main__":
                         help="a JSON file describing the constraints")
     parser.add_argument("--placements", "-p", required=True,
                         help="a JSON file describing the placements")
-    parser.add_argument("--allocations-prefix", "-a", required=True,
-                        help="prefix for allocation filenames")
+    parser.add_argument("--allocations", "-a", required=True, action="append",
+                        help="Allocation filenames in the form "
+                        "resource:filneame. Must be given once for each "
+                        "resource type.")
     parser.add_argument("--routes", "-r", required=True,
                         help="a JSON file describing the routes")
     args = parser.parse_args()
@@ -51,10 +53,12 @@ if __name__ == "__main__":
         placements = unpack_placements(json.load(f))
 
     allocations_json = []
-    for resource in machine.chip_resources:
-        with open("{}{}.json".format(args.allocations_prefix,
-                                     resource), "r") as f:
-            allocations_json.append(json.load(f))
+    for resource_filename in args.allocations:
+        resource, _, filename = resource_filename.partition(":")
+        with open(filename, "r") as f:
+            allocation_json = json.load(f)
+            assert allocation_json["type"] == resource
+            allocations_json.append(allocation_json)
     allocations = unpack_allocations(allocations_json)
 
     with open(args.routes, "r") as f:

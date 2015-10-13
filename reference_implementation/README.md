@@ -82,7 +82,8 @@ And used like so:
                              --machine=../examples/simple/machine.json \
                              --constraints=../examples/simple/constraints.json \
                              --placements=../examples/simple/placements.json \
-                             --allocations-prefix=../examples/simple/allocations_ \
+                             --allocations=cores:../examples/simple/allocations_cores.json \
+                             --allocations=sdram:../examples/simple/allocations_sdram.json \
                              --routes=../examples/simple/routes.json \
                              netlist.pcl
     
