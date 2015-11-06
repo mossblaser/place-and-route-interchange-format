@@ -219,7 +219,7 @@ edge is defined by a JSON object with four members as follows:
 This file contains a JSON array enumerating all the constraints applicable to
 the supplied application. Constraints are defined by JSON objects and are more
 fully defined in [the section describing the available
-constraints](#Constraints).
+constraints](#constraints).
 
 
 ### Placement Algorithms
