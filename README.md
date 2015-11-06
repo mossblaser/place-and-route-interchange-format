@@ -274,11 +274,91 @@ ranges indicate a single core has been allocated to each vertex.
 Next, the above files are supplied to a routing algorithm which produces
 another new file `routes.json`. The router must also be told which resource
 type represents SpiNNaker *cores* since it needs to know which core sink
-vertices are on to produce routes which end on those cores.
+vertices are on to produce routes which end on those cores. If no resource type
+maps to individual cores, this field may be omitted and the router will simply
+generate routes which terminate at the chips containing the sink vertices
+rather than a specific core. An application-defined post-processing step may
+then terminate routes with an appropriate core as required.
 
 #### `routes.json`
 
-*TODO*
+The `routes.json` file describes a route (i.e. path through the machine) for
+each edge in the application graph. File contains a JSON object mapping edges
+to routing trees like so:
+
+    {
+        "edge0": ...routing tree...,
+        "edge1": ...routing tree...,
+        "edge2": ...routing tree...
+        ...
+    }
+
+Each (multicast) route describes a tree structure of hops from the chip
+containing the source vertex to the chips containing the sink vertex. Each node
+in the routing tree is either a leaf-node represented by a vertex identifier,
+or a non-leaf node which looks like this:
+
+    {
+        "chip": [2, 3],
+        "children": [
+            {"route": ...direction..., "next_hop": ...routing tree...},
+            ...
+        ]
+    }
+
+A non-leaf node is located at a specific chip and may have a number of
+children. Each child is a JSON object representing the next 'hop' in the route
+and contains the direction of the hop (in the `"route"` field) and a routing
+tree node (in the `"next_hop"` field). Children may be on one of the six
+neighbouring chips or one of the eighteen local cores. These are represented by
+a direction of one of:
+
+* `east`
+* `north_east`
+* `north`
+* `west`
+* `south_west`
+* `south`
+* `core_0`
+* `core_1`
+* `core_2`
+* ...
+* `core_17`
+
+The root node of a routing tree must always be a non-leaf node. The routing
+tree must be complete (i.e. not miss out any hops), start at the source
+vertex's chip, have a leaf node for every sink vertex and be a strict tree
+structure (i.e. contain no loops). It is the router's responsibility not to
+produce routes which traverse cores or links marked as dead, it this is not
+possible the router should terminate with an error.
+
+As an example, consider a route starting from a vertex on chip (1, 1) and with
+a sink vertex, `"my_vertex"` on core 3 of chip (3, 1). A routing tree which
+hops from (1, 1) to (2, 1) to (3, 1) terminating on core 3 would be described
+like so:
+
+    {
+        "chip": [1, 1],
+        "children": [
+            {
+                "route": "east",
+                "next_hop": {
+                    "chip": [2, 1],
+                    "children": [
+                        "route": "east",
+                        "next_hop": {
+                            "chip": [3, 1],
+                            "children": [
+                                {"route": "core_3", "next_hop": "my_vertex"}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+
+For a larger example containing branching, see the examples directory.
 
 ### Routing Table Generation/Compression
 
@@ -290,11 +370,57 @@ multicast routing tables for each SpiNNaker chip.
 
 #### `routing_keys.json`
 
-*TODO*
+This file simply enumerates the keys and masks associated with each edge like
+so:
+
+    {
+        "edge0": [
+            {"key": 123, "mask": 4294967295},
+            ...
+        ],
+        ...
+    }
+
+Edges may have one or more key/mask pair associated with them. The generated
+routing table should route all packets matching any of the key/mask pairs along
+the associated route.
 
 #### `routing_tables.json`
 
-*TODO*
+This file enumerates the routing table entries to be added to each chip in the
+machine.
+
+    [
+        {
+            "chip": [0, 0],
+            "entries": [
+                {
+                    "key": 123,
+                    "mask": 4294967295,
+                    "directions": ["core_2", "north_east", ...]
+                }
+                ...
+            ]
+        },
+        ...
+    ]
+
+The `entries` member lists the routing entries to be loaded (in order) for the
+each chip. Each entry consists of a key, mask and a list of directions which
+may be any of:
+
+* `east`
+* `north_east`
+* `north`
+* `west`
+* `south_west`
+* `south`
+* `core_0`
+* `core_1`
+* `core_2`
+* ...
+* `core_17`
+
 
 Constraints
 -----------
