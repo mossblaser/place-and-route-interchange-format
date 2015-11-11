@@ -469,7 +469,19 @@ Some example uses:
   {
       "type": "reserve_resource",
       "resource": "cores",
-      "reservation": [0, 1]
+      "reservation": [0, 1],
+      "location": none
+  }
+  ```
+
+* We want to prevent cores 1, 2 and 3 being used on chip (2,3) for whatever reason.
+  
+  ```
+  {
+      "type": "reserve_resource",
+      "resource": "cores",
+      "reservation": [1, 4],
+      "location": [2, 3]
   }
   ```
 
@@ -480,7 +492,7 @@ Some example uses:
   {
       "type": "location",
       "vertex": "specialSnowflake",
-      "location": [1, 1]
+      "location": [1, 2]
   },
   {
       "type": "resource",
